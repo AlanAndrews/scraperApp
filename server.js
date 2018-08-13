@@ -13,6 +13,7 @@
 // saifj;lsadkjf;lskfj;lsadkfjsda;lkfjsad;lkfjsd;lkfj
 
 var express = require("express");
+var exphbs = require('express-handlebars');
 var bodyParser = require("body-parser");
 var logger = require("morgan");
 var mongoose = require("mongoose");
@@ -39,6 +40,9 @@ app.use(logger("dev"));
 app.use(bodyParser.urlencoded({ extended: true }));
 // Use express.static to serve the public folder as a static directory
 app.use(express.static("public"));
+// Express-Handlebars
+app.engine('handlebars', exphbs({defaultLayout: 'main'}));
+app.set('view engine', 'handlebars');
 
 
 
@@ -56,9 +60,19 @@ mongoose.connect(MONGODB_URI);
 
 
 
-
-
 // Routes
+
+module.exports = function(app) {
+  // Load index page
+  app.get("/", function(req, res) {
+    db.Article.findAll({}).then(function(result) {
+      res.render("jobDetails", {
+        msg: "Welcome!",
+        examples: result
+      });
+    });
+  });
+
 
 // A GET route for scraping the echoJS website
 app.get("/scrape", function(req, res) {
